@@ -9,10 +9,19 @@ const {
   setContact,
 } = require("./../../controllers/contacts");
 
+const { isValidId, validateBody } = require("./../../middlewares/index");
+
+const { contactJoiSchema } = require("./../../schemas/contacts");
+
 router.get("/", getAllContacts);
-router.get("/:contactId", getSingleContact);
-router.post("/", addNewContact);
-router.delete("/:contactId", deleteContact);
-router.put("/:contactId", setContact);
+router.get("/:contactId", isValidId, getSingleContact);
+router.post("/", validateBody(contactJoiSchema), addNewContact);
+router.delete("/:contactId", isValidId, deleteContact);
+router.put(
+  "/:contactId",
+  isValidId,
+  validateBody(contactJoiSchema),
+  setContact
+);
 
 module.exports = router;

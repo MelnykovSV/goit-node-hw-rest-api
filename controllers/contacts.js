@@ -1,15 +1,9 @@
 const { HttpError, ctrlWrapper } = require("./../helpers/index");
-const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require("./../models/contacts");
 
-const { contactSchema } = require("./../validation/index");
+const { Contact } = require("./../models/contact");
+
 const getAllContacts = async (req, res) => {
-  const response = await listContacts();
+  const response = await Contact.find();
 
   res.status(200).json({
     status: "success",
@@ -20,8 +14,7 @@ const getAllContacts = async (req, res) => {
 };
 
 const getSingleContact = async (req, res) => {
-  const id = req.params.contactId;
-  const response = await getContactById(id);
+  const response = await Contact.findById(req.params.contactId);
   if (!response) {
     throw HttpError(404, "Not found");
   }
@@ -35,25 +28,7 @@ const getSingleContact = async (req, res) => {
 };
 
 const addNewContact = async (req, res) => {
-  const body = req.body;
-  if (!Object.keys(body).length) {
-    throw HttpError(400, "missing fields");
-  }
-
-  const { error } = contactSchema.validate(body);
-
-  if (error) {
-    throw HttpError(400, error.message);
-  }
-
-  const response = await addContact(body);
-
-  if (response === "contact already exists") {
-    throw HttpError(
-      409,
-      "Contact with such name, email or phone already exists"
-    );
-  }
+  const response = await Contact.create(req.body);
 
   res.status(201).json({
     status: "success",
@@ -64,10 +39,11 @@ const addNewContact = async (req, res) => {
 };
 
 const deleteContact = async (req, res, next) => {
-  const response = await removeContact(req.params.contactId);
+  const response = await Contact.findByIdAndRemove(req.params.contactId);
   if (!response) {
     throw HttpError(404, "Not found");
   }
+
   res.status(200).json({
     status: "success",
     code: 200,
@@ -77,25 +53,14 @@ const deleteContact = async (req, res, next) => {
 };
 
 const setContact = async (req, res, next) => {
-  if (!Object.keys(req.body).length) {
-    throw HttpError(400, "missing fields");
-  }
-  const { error } = contactSchema.validate(req.body);
-  if (error) {
-    throw HttpError(400, error.message);
-  }
-
-  const response = await updateContact(req.params.contactId, req.body);
+  const response = await Contact.findByIdAndUpdate(
+    req.params.contactId,
+    req.body,
+    { new: true }
+  );
 
   if (!response) {
     throw HttpError(404, "Not found");
-  }
-
-  if (response === "contact already exists") {
-    throw HttpError(
-      409,
-      "Contact with such name, email or phone already exists"
-    );
   }
 
   res.status(200).json({
@@ -105,8 +70,6 @@ const setContact = async (req, res, next) => {
     data: response,
   });
 };
-
-
 
 module.exports = {
   getAllContacts: ctrlWrapper(getAllContacts),

@@ -6,12 +6,15 @@ const {
   getSingleContact,
   addNewContact,
   deleteContact,
-  setContact,
+  updateContact,
 } = require("./../../controllers/contacts");
 
 const { isValidId, validateBody } = require("./../../middlewares/index");
 
-const { contactJoiSchema } = require("./../../schemas/contacts");
+const {
+  contactJoiSchema,
+  updateFavoriteJoiSchema,
+} = require("./../../schemas/contacts");
 
 router.get("/", getAllContacts);
 router.get("/:contactId", isValidId, getSingleContact);
@@ -21,7 +24,13 @@ router.put(
   "/:contactId",
   isValidId,
   validateBody(contactJoiSchema),
-  setContact
+  updateContact
+);
+router.patch(
+  "/:contactId",
+  isValidId,
+  validateBody(updateFavoriteJoiSchema),
+  updateContact
 );
 
 module.exports = router;

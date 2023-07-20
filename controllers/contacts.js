@@ -52,7 +52,7 @@ const deleteContact = async (req, res, next) => {
   });
 };
 
-const setContact = async (req, res, next) => {
+const updateContact = async (req, res, next) => {
   const response = await Contact.findByIdAndUpdate(
     req.params.contactId,
     req.body,
@@ -76,5 +76,5 @@ module.exports = {
   getSingleContact: ctrlWrapper(getSingleContact),
   addNewContact: ctrlWrapper(addNewContact),
   deleteContact: ctrlWrapper(deleteContact),
-  setContact: ctrlWrapper(setContact),
+  updateContact: ctrlWrapper(updateContact),
 };

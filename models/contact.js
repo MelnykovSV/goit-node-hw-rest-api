@@ -22,7 +22,7 @@ const contactSchema = new Schema(
       match: /^\(\d{3}\) \d{3}-\d{4}$/,
       unique: true,
     },
-    favourite: { type: Boolean,  default: false },
+    favorite: { type: Boolean, default: false },
   },
   { versionKey: false, timestamps: true }
 );
@@ -37,7 +37,7 @@ const contactJoiSchema = Joi.object({
   phone: Joi.string()
     .pattern(/^\(\d{3}\)\s\d{3}-\d{4}$/, "numbers")
     .required(),
-  favourite: Joi.boolean(),
+  favorite: Joi.boolean(),
 });
 
 contactSchema.post("save", handleMongooseError);

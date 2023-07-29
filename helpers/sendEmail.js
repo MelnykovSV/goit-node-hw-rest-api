@@ -4,14 +4,15 @@ const { SENDGRID_API_KEY } = process.env;
 
 sgMail.setApiKey(SENDGRID_API_KEY);
 
-sgMail
-  .send()
-  .then(() => {
-    console.log("Email sent");
-  })
-  .catch((error) => {
-    console.log(error.message);
-  });
+// sgMail
+//   .send()
+//   .then(() => {
+//     console.log("Email sent");
+//   })
+//   .catch((error) => {
+//     console.log(error.message);
+//     console.log("error.message");
+//   });
 
 const sendEmail = async (data) => {
   const email = { ...data, from: "melnykov8515@gmail.com" };

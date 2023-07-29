@@ -8,21 +8,23 @@ const contactSchema = new Schema(
       type: String,
       required: true,
       match: /^[A-Za-z\s]{3,20}$/,
-      unique: true,
     },
     email: {
       type: String,
       required: true,
       match: /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/,
-      unique: true,
     },
     phone: {
       type: String,
       required: true,
       match: /^\(\d{3}\) \d{3}-\d{4}$/,
-      unique: true,
     },
     favorite: { type: Boolean, default: false },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -43,6 +45,7 @@ const contactJoiSchema = Joi.object({
 const updateFavoriteJoiSchema = Joi.object({
   favorite: Joi.boolean(),
 });
+
 contactSchema.post("save", handleMongooseError);
 
 const Contact = model("contact", contactSchema);

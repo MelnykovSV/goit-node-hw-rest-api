@@ -4,7 +4,7 @@ const app = require("./../app");
 
 const mongoDB = require("./../server");
 
-const req = { email: "tinaj66645@sportrid.com", password: "Aa111111" };
+const req = { email: "pisay24077@sportrid.com", password: "Aa111111" };
 
 describe("Test the root path", () => {
   beforeAll(() => {
@@ -23,8 +23,12 @@ describe("Test the root path", () => {
   });
   test("Should have status-code 200", async () => {
     const response = await request(app).post("/api/auth/login").send(req);
-    expect(response.body.data.user.userName).toBe("tinaj66645");
-    expect(response.body.data.user.email).toBe("tinaj66645@sportrid.com");
-    expect(Object.keys(response.body.data.user).length).toBe(2);
+    expect(response.body.data.user.userName).toBe("pisay24077");
+    expect(response.body.data.user.email).toBe("pisay24077@sportrid.com");
+    expect(response.body.data.user.subscription).toBe("starter");
+    expect(response.body.data.user.avatarURL).toBe(
+      "//www.gravatar.com/avatar/5f5eb4cafee5feeeb95be5f550fcc7c5"
+    );
+    expect(Object.keys(response.body.data.user).length).toBe(4);
   });
 });

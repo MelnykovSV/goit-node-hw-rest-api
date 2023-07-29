@@ -32,18 +32,18 @@ const registerUser = async (req, res) => {
   await sendEmail(verifyEmail);
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
   const { userName, subscription, _id } = await User.create({
     ...req.body,
     password: hashPassword,
     verificationCode,
+    avatarURL,
   });
 
   const token = generateToken(_id);
   await User.findByIdAndUpdate(_id, {
     token,
   });
-
-  const avatarURL = gravatar.url(email);
 
   res.status(201).json({
     status: "success",
@@ -56,7 +56,6 @@ const registerUser = async (req, res) => {
         email,
         subscription,
         avatarURL,
-        verificationCode,
       },
     },
   });
@@ -68,7 +67,7 @@ const loginUser = async (req, res) => {
   const user = await User.findOne({
     email: loginEmail,
   });
-  const { _id, email, subscription, userName, password } = user;
+
   if (!user) {
     throw HttpError(401, "Email or password invalid");
   }
@@ -76,8 +75,12 @@ const loginUser = async (req, res) => {
   if (!user.verify) {
     throw HttpError(401, "Email not verified");
   }
+  const { _id, email, subscription, userName, password, avatarURL } = user;
 
-  const isPasswordCorrect = bcrypt.compare(loginPassword, password);
+  console.log(loginPassword);
+  console.log(password);
+
+  const isPasswordCorrect = await bcrypt.compare(loginPassword, password);
 
   if (!isPasswordCorrect) {
     throw HttpError(401, "Email or password invalid");
@@ -98,7 +101,7 @@ const loginUser = async (req, res) => {
         userName,
         email,
         subscription,
-        _id,
+        avatarURL,
       },
     },
   });
@@ -118,12 +121,19 @@ const logoutUser = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   const user = req.user;
 
+  const { email, subscription, userName, avatarURL } = user;
+
   res.status(200).json({
     status: "success",
     code: 200,
-    message: "User logged out",
+    message: "Current user data",
     data: {
-      user,
+      user: {
+        userName,
+        email,
+        subscription,
+        avatarURL,
+      },
     },
   });
 };
@@ -165,14 +175,15 @@ const updateAvatar = async (req, res) => {
   });
   await fs.unlink(tempUpload);
 
-  const avatarUrl = path.join("avatars", filename);
-  await User.findByIdAndUpdate(_id, { avatarUrl });
+  const avatarURL = path.join("avatars", filename);
 
+  const a = await User.findByIdAndUpdate(_id, { avatarURL });
+  console.log(a);
   res.status(200).json({
     status: "success",
     code: 200,
     message: "User info updated",
-    data: { avatarUrl },
+    data: { avatarURL },
   });
 };
 
@@ -205,10 +216,14 @@ const resendVerifyEmail = async (req, res) => {
     throw HttpError(401, "Email already verified");
   }
 
+  const verificationCode = nanoid();
+
+  await User.findOneAndUpdate({ email }, { verificationCode });
+
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationCode}">Click to verify email</a>`,
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to verify email</a>`,
   };
 
   await sendEmail(verifyEmail);

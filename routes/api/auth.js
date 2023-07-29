@@ -38,7 +38,7 @@ authRouter.patch(
   updateUserInfo
 );
 
-authRouter.post(
+authRouter.patch(
   "/avatars",
   authenticate,
   upload.single("avatar"),

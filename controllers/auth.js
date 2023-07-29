@@ -77,9 +77,6 @@ const loginUser = async (req, res) => {
   }
   const { _id, email, subscription, userName, password, avatarURL } = user;
 
-  console.log(loginPassword);
-  console.log(password);
-
   const isPasswordCorrect = await bcrypt.compare(loginPassword, password);
 
   if (!isPasswordCorrect) {
@@ -164,8 +161,6 @@ const updateAvatar = async (req, res) => {
   const filename = `${_id}_${originalname}`;
   const resultUpload = path.join(avatarsDir, filename);
 
-  // await fs.rename(tempUpload, resultUpload);
-
   Jimp.read(tempUpload, (err, avatar) => {
     if (err) throw err;
     avatar
@@ -177,8 +172,8 @@ const updateAvatar = async (req, res) => {
 
   const avatarURL = path.join("avatars", filename);
 
-  const a = await User.findByIdAndUpdate(_id, { avatarURL });
-  console.log(a);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+
   res.status(200).json({
     status: "success",
     code: 200,

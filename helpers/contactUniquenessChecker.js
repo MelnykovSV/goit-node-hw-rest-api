@@ -11,22 +11,19 @@ const contactUniquenessChecker = (data, element, _id = "") => {
     if (item.name === name && item._id.toString() !== _id) {
       result.unique = false;
       result.field = "name";
-      console.log(item);
-      console.log(_id);
+
       break;
     }
     if (item.email === email && item._id.toString() !== _id) {
       result.unique = false;
       result.field = "email";
-      console.log(item._id);
-      console.log(_id);
+
       break;
     }
     if (item.phone === phone && item._id.toString() !== _id) {
       result.unique = false;
       result.field = "phone";
-      console.log(item);
-      console.log(_id);
+   
       break;
     }
   }

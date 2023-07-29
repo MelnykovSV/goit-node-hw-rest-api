@@ -63,6 +63,7 @@ const addNewContact = async (req, res) => {
     throw HttpError(400, `This ${field} is already in your contacts`);
   }
 
+
   const { name, email, phone, favorite, _id } = await Contact.create({
     ...req.body,
     owner,

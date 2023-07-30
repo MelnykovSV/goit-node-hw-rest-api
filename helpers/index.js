@@ -4,7 +4,6 @@ const ctrlWrapper = require("./ctrlWrapper");
 const handleMongooseError = require("./handleMongooseError");
 const calculatePaginationParams = require("./calculatePaginationParams");
 const contactUniquenessChecker = require("./contactUniquenessChecker");
-const sendEmail = require("./sendEmail");
 
 module.exports = {
   HttpError,
@@ -13,5 +12,4 @@ module.exports = {
   handleMongooseError,
   calculatePaginationParams,
   contactUniquenessChecker,
-  sendEmail,
 };

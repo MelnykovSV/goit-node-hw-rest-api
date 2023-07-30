@@ -140,7 +140,11 @@ const updateUserInfo = async (req, res) => {
 
   const { subscription } = req.body;
 
-  const response = await User.findByIdAndUpdate(user._id, { subscription });
+  const response = await User.findByIdAndUpdate(
+    user._id,
+    { subscription },
+    { new: true }
+  );
 
   if (!response) {
     throw HttpError(404, "Not found");

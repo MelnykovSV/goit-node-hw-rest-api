@@ -1,4 +1,4 @@
-const { ctrlWrapper, HttpError, sendEmail } = require("./../helpers/index");
+const { ctrlWrapper, HttpError } = require("./../helpers/index");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { User } = require("./../models/auth");
@@ -7,11 +7,8 @@ const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const avatarsDir = path.join(__dirname, "../", "public/", "avatars");
 const Jimp = require("jimp");
-const { nanoid } = require("nanoid");
 
 require("dotenv").config();
-
-const { BASE_URL } = process.env;
 
 const registerUser = async (req, res) => {
   const { email, password } = req.body;
@@ -21,22 +18,12 @@ const registerUser = async (req, res) => {
   if (user) {
     throw HttpError(409, "Email already in use");
   }
-  const verificationCode = nanoid();
-
-  const verifyEmail = {
-    to: email,
-    subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to verify email</a>`,
-  };
-
-  await sendEmail(verifyEmail);
 
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
   const { userName, subscription, _id } = await User.create({
     ...req.body,
     password: hashPassword,
-    verificationCode,
     avatarURL,
   });
 
@@ -186,53 +173,53 @@ const updateAvatar = async (req, res) => {
   });
 };
 
-const verifyEmail = async (req, res) => {
-  const { verificationCode } = req.params;
-  const user = await User.findOne({ verificationCode });
-  if (!user) {
-    throw HttpError(404, "Email not found or verification code is outdated");
-  }
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verificationCode: "",
-  });
+// const verifyEmail = async (req, res) => {
+//   const { verificationCode } = req.params;
+//   const user = await User.findOne({ verificationCode });
+//   if (!user) {
+//     throw HttpError(404, "Email not found or verification code is outdated");
+//   }
+//   await User.findByIdAndUpdate(user._id, {
+//     verify: true,
+//     verificationCode: "",
+//   });
 
-  res.status(200).json({
-    status: "success",
-    code: 200,
-    message: "Email verified",
-  });
-};
+//   res.status(200).json({
+//     status: "success",
+//     code: 200,
+//     message: "Email verified",
+//   });
+// };
 
-const resendVerifyEmail = async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw HttpError(401, "Email not found");
-  }
+// const resendVerifyEmail = async (req, res) => {
+//   const { email } = req.body;
+//   const user = await User.findOne({ email });
+//   if (!user) {
+//     throw HttpError(401, "Email not found");
+//   }
 
-  if (user.verify) {
-    throw HttpError(401, "Email already verified");
-  }
+//   if (user.verify) {
+//     throw HttpError(401, "Email already verified");
+//   }
 
-  const verificationCode = nanoid();
+//   const verificationCode = nanoid();
 
-  await User.findOneAndUpdate({ email }, { verificationCode });
+//   await User.findOneAndUpdate({ email }, { verificationCode });
 
-  const verifyEmail = {
-    to: email,
-    subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to verify email</a>`,
-  };
+//   const verifyEmail = {
+//     to: email,
+//     subject: "Verify email",
+//     html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to verify email</a>`,
+//   };
 
-  await sendEmail(verifyEmail);
+//   await sendEmail(verifyEmail);
 
-  res.status(200).json({
-    status: "success",
-    code: 200,
-    message: "Verify email sent successfuly",
-  });
-};
+//   res.status(200).json({
+//     status: "success",
+//     code: 200,
+//     message: "Verify email sent successfuly",
+//   });
+// };
 
 module.exports = {
   registerUser: ctrlWrapper(registerUser),
@@ -241,6 +228,6 @@ module.exports = {
   getCurrentUser: ctrlWrapper(getCurrentUser),
   updateUserInfo: ctrlWrapper(updateUserInfo),
   updateAvatar: ctrlWrapper(updateAvatar),
-  verifyEmail: ctrlWrapper(verifyEmail),
-  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
+  // verifyEmail: ctrlWrapper(verifyEmail),
+  // resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
 };

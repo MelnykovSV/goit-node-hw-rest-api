@@ -14,20 +14,16 @@ const {
   getCurrentUser,
   updateUserInfo,
   updateAvatar,
-  verifyEmail,
-  resendVerifyEmail,
 } = require("./../../controllers/auth");
 
 const {
   registerJoiSchema,
   loginJoiSchema,
   updateUserJoiSchema,
-  emailJoiSchema,
 } = require("./../../schemas/auth");
 
 authRouter.post("/register", validateBody(registerJoiSchema), registerUser);
-authRouter.get("/verify/:verificationCode", verifyEmail);
-authRouter.post("/verify/", validateBody(emailJoiSchema), resendVerifyEmail);
+
 authRouter.post("/login", validateBody(loginJoiSchema), loginUser);
 authRouter.post("/logout", authenticate, logoutUser);
 authRouter.get("/current", authenticate, getCurrentUser);

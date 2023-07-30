@@ -39,14 +39,6 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
-    verify: {
-      type: Boolean,
-      default: false,
-    },
-    verificationCode: {
-      type: String,
-      default: "",
-    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -82,10 +74,6 @@ const updateUserJoiSchema = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business").required(),
 });
 
-const emailJoiSchema = Joi.object({
-  email: Joi.string().pattern(emailRegexp, "Invalid email").required(),
-});
-
 userSchema.post("save", handleMongooseError);
 
 const User = model("user", userSchema);
@@ -95,5 +83,4 @@ module.exports = {
   registerJoiSchema,
   loginJoiSchema,
   updateUserJoiSchema,
-  emailJoiSchema,
 };

@@ -1,16 +1,26 @@
+import {
+  IExtendedRequest,
+  ISearchQueryBody,
+  ISearchQuery,
+} from "../interfaces";
+import * as express from "express";
 const {
   HttpError,
   ctrlWrapper,
   calculatePaginationParams,
   contactUniquenessChecker,
-} = require("./../helpers/index");
+} = require("../helpers/index");
 
 const { Contact } = require("./../models/contact");
 
-const getAllContacts = async (req, res) => {
+const getAllContacts = async (req: IExtendedRequest, res: express.Response) => {
   const { _id: owner } = req.user;
   const { page = 1, limit = 3, favorite = null } = req.query;
-  const searchQueryBody = { owner };
+    /// Узнать, почему  у query свой тип ParsedQs и как с ним работать?
+  const searchQueryBody = { owner } as ISearchQueryBody;
+
+
+
   if (favorite !== null) {
     searchQueryBody.favorite = favorite;
   }
@@ -29,7 +39,10 @@ const getAllContacts = async (req, res) => {
   });
 };
 
-const getSingleContact = async (req, res) => {
+const getSingleContact = async (
+  req: IExtendedRequest,
+  res: express.Response
+) => {
   const { _id: owner } = req.user;
   const { contactId: _id } = req.params;
 
@@ -49,7 +62,7 @@ const getSingleContact = async (req, res) => {
   });
 };
 
-const addNewContact = async (req, res) => {
+const addNewContact = async (req: IExtendedRequest, res: express.Response) => {
   const { _id: owner } = req.user;
 
   const userContacts = await Contact.find(
@@ -62,7 +75,6 @@ const addNewContact = async (req, res) => {
   if (!unique) {
     throw HttpError(400, `This ${field} is already in your contacts`);
   }
-
 
   const { name, email, phone, favorite, _id } = await Contact.create({
     ...req.body,
@@ -77,7 +89,7 @@ const addNewContact = async (req, res) => {
   });
 };
 
-const deleteContact = async (req, res) => {
+const deleteContact = async (req: IExtendedRequest, res: express.Response) => {
   const { _id: owner } = req.user;
   const response = await Contact.findOneAndRemove({
     _id: req.params.contactId,
@@ -97,7 +109,7 @@ const deleteContact = async (req, res) => {
   });
 };
 
-const updateContact = async (req, res) => {
+const updateContact = async (req: IExtendedRequest, res: express.Response) => {
   const { _id: owner } = req.user;
 
   const userContacts = await Contact.find(
@@ -145,3 +157,5 @@ module.exports = {
   deleteContact: ctrlWrapper(deleteContact),
   updateContact: ctrlWrapper(updateContact),
 };
+
+export {};

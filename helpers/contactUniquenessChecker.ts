@@ -1,7 +1,12 @@
-const contactUniquenessChecker = (data, element, _id = "") => {
+import { IContact } from "../interfaces";
+const contactUniquenessChecker = (
+  data: IContact[],
+  element: IContact,
+  _id = ""
+) => {
   const { name, email, phone } = element;
 
-  const result = { unique: true, field: null };
+  const result = { unique: true, field: null as string | null };
 
   data.find(
     (item) => item.name === name || item.email === email || item.phone === phone
@@ -23,7 +28,7 @@ const contactUniquenessChecker = (data, element, _id = "") => {
     if (item.phone === phone && item._id.toString() !== _id) {
       result.unique = false;
       result.field = "phone";
-   
+
       break;
     }
   }

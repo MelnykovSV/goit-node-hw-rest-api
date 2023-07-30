@@ -1,3 +1,5 @@
+import { IError } from "./interfaces";
+import * as Express from "express";
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
@@ -19,7 +21,7 @@ app.use(express.static("public"));
 app.use("/api/auth", authRouter);
 app.use("/api/contacts", contactsRouter);
 
-app.use((_, res) => {
+app.use((_: Express.Request, res: Express.Response) => {
   res.status(400).json({
     status: "error",
     code: 400,
@@ -28,13 +30,20 @@ app.use((_, res) => {
   });
 });
 
-app.use((err, _, res, __) => {
-  const { status = 500, message = "Internal Server Error" } = err;
-  res.status(status).json({
-    status: "error",
-    code: status,
-    message: message,
-  });
-});
+app.use(
+  (
+    err: IError,
+    _: Express.Request,
+    res: Express.Response,
+    __: Express.NextFunction
+  ) => {
+    const { status = 500, message = "Internal Server Error" } = err;
+    res.status(status).json({
+      status: "error",
+      code: status,
+      message: message,
+    });
+  }
+);
 
 module.exports = app;

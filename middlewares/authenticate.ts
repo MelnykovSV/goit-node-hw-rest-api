@@ -1,9 +1,18 @@
+import * as express from "express";
+import { IExtendedRequest } from "../interfaces";
 const HttpError = require("./../helpers/HttpError");
 const { validateToken } = require("./../helpers/tokenHandlers");
 
 const { User } = require("./../models/auth");
-const authenticate = async (req, res, next) => {
+const authenticate = async (
+  req: IExtendedRequest,
+  res: express.Response,
+  next: express.NextFunction
+) => {
   try {
+    if (!req.headers.authorization) {
+      throw HttpError(401, "Not authorized");
+    }
     const [bearer = "", token = ""] = req.headers.authorization.split(" ");
 
     if (bearer !== "Bearer") {
@@ -26,3 +35,5 @@ const authenticate = async (req, res, next) => {
 };
 
 module.exports = authenticate;
+
+export {};

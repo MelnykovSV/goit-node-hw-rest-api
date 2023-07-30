@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("./../helpers/index");
+const { handleMongooseError } = require("../helpers/index");
 const Joi = require("joi");
 
 const {
@@ -97,3 +97,6 @@ module.exports = {
   updateUserJoiSchema,
   emailJoiSchema,
 };
+
+
+export {}

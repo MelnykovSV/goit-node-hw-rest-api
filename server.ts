@@ -1,3 +1,4 @@
+import { IError } from "./interfaces";
 const app = require("./app");
 const mongoose = require("mongoose");
 
@@ -14,7 +15,7 @@ mongoose
       console.log("Server running. Use our API on port: 3000");
     });
   })
-  .catch((error) => {
+  .catch((error: IError) => {
     console.log(error.message);
     process.exit(1);
   });
@@ -25,7 +26,7 @@ module.exports = {
     mongoose.Promise = Promise;
     mongoose.connect(DB_HOST);
   },
-  disconnect: (done) => {
+  disconnect: (done: string) => {
     mongoose.disconnect(done);
   },
 };

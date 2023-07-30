@@ -1,4 +1,12 @@
-function isContactUnique(data, name, email, phone, exeptionId) {
+import { IContact } from "../interfaces";
+
+const isContactUnique = (
+  data: IContact[],
+  name: string,
+  email: string,
+  phone: string,
+  exeptionId: number
+) => {
   let dataToCheck = [...data];
   if (exeptionId !== undefined) {
     dataToCheck = [...data.filter((item, i) => i !== exeptionId)];
@@ -8,6 +16,8 @@ function isContactUnique(data, name, email, phone, exeptionId) {
   });
 
   return !result;
-}
+};
 
 module.exports = isContactUnique;
+
+//TODO: CHECH IF THIS IS NEEDED!

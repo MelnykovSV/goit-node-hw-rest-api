@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("./../helpers/index");
+const { handleMongooseError } = require("../helpers/index");
 const Joi = require("joi");
 
 const contactSchema = new Schema(
@@ -51,3 +51,5 @@ contactSchema.post("save", handleMongooseError);
 const Contact = model("contact", contactSchema);
 
 module.exports = { Contact, contactJoiSchema, updateFavoriteJoiSchema };
+
+export {};

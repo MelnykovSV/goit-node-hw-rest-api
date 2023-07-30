@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const authenticate = require("./../../middlewares/authenticate");
 
 const {
   getAllContacts,
@@ -10,7 +9,11 @@ const {
   updateContact,
 } = require("./../../controllers/contacts");
 
-const { isValidId, validateBody } = require("./../../middlewares/index");
+const {
+  isValidId,
+  validateBody,
+  authenticate,
+} = require("./../../middlewares/index");
 
 const {
   contactJoiSchema,

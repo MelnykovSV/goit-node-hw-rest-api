@@ -1,4 +1,6 @@
-const { ctrlWrapper, HttpError, sendEmail } = require("./../helpers/index");
+import { IExtendedRequest } from "../interfaces";
+import * as express from "express";
+const { ctrlWrapper, HttpError, sendEmail } = require("../helpers/index");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const { User } = require("./../models/auth");
@@ -8,12 +10,13 @@ const fs = require("fs/promises");
 const avatarsDir = path.join(__dirname, "../", "public/", "avatars");
 const Jimp = require("jimp");
 const { nanoid } = require("nanoid");
+// import Jimp from "jimp";
 
 require("dotenv").config();
 
 const { BASE_URL } = process.env;
 
-const registerUser = async (req, res) => {
+const registerUser = async (req: express.Request, res: express.Response) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -61,7 +64,7 @@ const registerUser = async (req, res) => {
   });
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req: express.Request, res: express.Response) => {
   const { email: loginEmail, password: loginPassword } = req.body;
 
   const user = await User.findOne({
@@ -104,7 +107,7 @@ const loginUser = async (req, res) => {
   });
 };
 
-const logoutUser = async (req, res) => {
+const logoutUser = async (req: IExtendedRequest, res: express.Response) => {
   await User.findByIdAndUpdate(req.user._id, {
     token: "",
   });
@@ -115,7 +118,7 @@ const logoutUser = async (req, res) => {
   });
 };
 
-const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req: IExtendedRequest, res: express.Response) => {
   const user = req.user;
 
   const { email, subscription, userName, avatarURL } = user;
@@ -135,7 +138,7 @@ const getCurrentUser = async (req, res) => {
   });
 };
 
-const updateUserInfo = async (req, res) => {
+const updateUserInfo = async (req: IExtendedRequest, res: express.Response) => {
   const user = req.user;
 
   const { subscription } = req.body;
@@ -158,14 +161,14 @@ const updateUserInfo = async (req, res) => {
   });
 };
 
-const updateAvatar = async (req, res) => {
+const updateAvatar = async (req: IExtendedRequest, res: express.Response) => {
   const { _id } = req.user;
 
-  const { path: tempUpload, originalname } = req.file;
+  const { path: tempUpload, originalname } = req.file!;
   const filename = `${_id}_${originalname}`;
   const resultUpload = path.join(avatarsDir, filename);
 
-  Jimp.read(tempUpload, (err, avatar) => {
+  Jimp.read(tempUpload, (err: Error, avatar: typeof Jimp) => {
     if (err) throw err;
     avatar
       .resize(250, 250) // resize
@@ -186,7 +189,7 @@ const updateAvatar = async (req, res) => {
   });
 };
 
-const verifyEmail = async (req, res) => {
+const verifyEmail = async (req: express.Request, res: express.Response) => {
   const { verificationCode } = req.params;
   const user = await User.findOne({ verificationCode });
   if (!user) {
@@ -204,7 +207,10 @@ const verifyEmail = async (req, res) => {
   });
 };
 
-const resendVerifyEmail = async (req, res) => {
+const resendVerifyEmail = async (
+  req: express.Request,
+  res: express.Response
+) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
@@ -244,3 +250,5 @@ module.exports = {
   verifyEmail: ctrlWrapper(verifyEmail),
   resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
 };
+
+export {};

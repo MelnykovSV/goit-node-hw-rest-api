@@ -5,3 +5,5 @@ module.exports = {
   contactNameRegexp,
   contactPhoneRegexp,
 };
+
+export {}

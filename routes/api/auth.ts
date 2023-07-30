@@ -46,3 +46,4 @@ authRouter.patch(
 );
 
 module.exports = authRouter;
+export {}

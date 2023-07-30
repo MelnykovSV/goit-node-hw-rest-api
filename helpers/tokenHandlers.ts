@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = process.env;
 
-const generateToken = (id) => {
+const generateToken = (id: string) => {
   const payload = {
     id,
   };
@@ -9,7 +9,7 @@ const generateToken = (id) => {
   return token;
 };
 
-const validateToken = (token) => {
+const validateToken = (token: string) => {
   const result = jwt.verify(token, SECRET_KEY);
   return result;
 };

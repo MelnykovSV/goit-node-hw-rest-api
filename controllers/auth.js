@@ -1,14 +1,8 @@
 const { ctrlWrapper, HttpError } = require("./../helpers/index");
-const path = require("path");
 const bcrypt = require("bcrypt");
 const { User } = require("./../models/auth");
 const { generateToken } = require("../helpers/tokenHandlers");
-const gravatar = require("gravatar");
-const fs = require("fs/promises");
-const avatarsDir = path.join(__dirname, "../", "public/", "avatars");
-const Jimp = require("jimp");
-
-require("dotenv").config();
+// require("dotenv").config();
 
 const registerUser = async (req, res) => {
   const { email, password } = req.body;
@@ -20,11 +14,10 @@ const registerUser = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
-  const avatarURL = gravatar.url(email);
+
   const { userName, subscription, _id } = await User.create({
     ...req.body,
     password: hashPassword,
-    avatarURL,
   });
 
   const token = generateToken(_id);
@@ -42,7 +35,6 @@ const registerUser = async (req, res) => {
         userName,
         email,
         subscription,
-        avatarURL,
       },
     },
   });
@@ -62,7 +54,7 @@ const loginUser = async (req, res) => {
   if (!user.verify) {
     throw HttpError(401, "Email not verified");
   }
-  const { _id, email, subscription, userName, password, avatarURL } = user;
+  const { _id, email, subscription, userName, password } = user;
 
   const isPasswordCorrect = await bcrypt.compare(loginPassword, password);
 
@@ -85,7 +77,6 @@ const loginUser = async (req, res) => {
         userName,
         email,
         subscription,
-        avatarURL,
       },
     },
   });
@@ -105,7 +96,7 @@ const logoutUser = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   const user = req.user;
 
-  const { email, subscription, userName, avatarURL } = user;
+  const { email, subscription, userName } = user;
 
   res.status(200).json({
     status: "success",
@@ -116,7 +107,6 @@ const getCurrentUser = async (req, res) => {
         userName,
         email,
         subscription,
-        avatarURL,
       },
     },
   });
@@ -145,39 +135,10 @@ const updateUserInfo = async (req, res) => {
   });
 };
 
-const updateAvatar = async (req, res) => {
-  const { _id } = req.user;
-
-  const { path: tempUpload, originalname } = req.file;
-  const filename = `${_id}_${originalname}`;
-  const resultUpload = path.join(avatarsDir, filename);
-
-  Jimp.read(tempUpload, (err, avatar) => {
-    if (err) throw err;
-    avatar
-      .resize(250, 250) // resize
-      .quality(60) // set JPEG quality
-      .write(resultUpload); // save
-  });
-  await fs.unlink(tempUpload);
-
-  const avatarURL = path.join("avatars", filename);
-
-  await User.findByIdAndUpdate(_id, { avatarURL });
-
-  res.status(200).json({
-    status: "success",
-    code: 200,
-    message: "User info updated",
-    data: { avatarURL },
-  });
-};
-
 module.exports = {
   registerUser: ctrlWrapper(registerUser),
   loginUser: ctrlWrapper(loginUser),
   logoutUser: ctrlWrapper(logoutUser),
   getCurrentUser: ctrlWrapper(getCurrentUser),
   updateUserInfo: ctrlWrapper(updateUserInfo),
-  updateAvatar: ctrlWrapper(updateAvatar),
 };

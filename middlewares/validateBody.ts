@@ -1,7 +1,7 @@
 import * as express from "express";
 import { ObjectSchema } from "@hapi/joi";
 
-const { HttpError } = require("../helpers");
+const { HttpError } = require("../helpers/index");
 
 const validateBody = (schema: ObjectSchema) => {
   const func = (

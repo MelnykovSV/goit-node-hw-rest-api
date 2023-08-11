@@ -163,6 +163,10 @@ const updateUserInfo = async (req: IExtendedRequest, res: express.Response) => {
 
 const updateAvatar = async (req: IExtendedRequest, res: express.Response) => {
   const { _id } = req.user;
+  const user = await User.findById(_id);
+  if (!user) {
+    throw HttpError(401);
+  }
 
   const { path: tempUpload, originalname } = req.file!;
   const filename = `${_id}_${originalname}`;

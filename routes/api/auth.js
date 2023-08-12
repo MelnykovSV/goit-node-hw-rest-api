@@ -1,11 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
 
-const {
-  authenticate,
-  validateBody,
-
-} = require("./../../middlewares/index");
+const { authenticate, validateBody } = require("./../../middlewares/index");
 
 const {
   registerUser,
@@ -13,8 +9,7 @@ const {
   logoutUser,
   getCurrentUser,
   updateUserInfo,
-
-} = require("./../../controllers/auth");
+} = require("../../controllers/auth/index");
 
 const {
   registerJoiSchema,
@@ -33,7 +28,5 @@ authRouter.patch(
   validateBody(updateUserJoiSchema),
   updateUserInfo
 );
-
-
 
 module.exports = authRouter;

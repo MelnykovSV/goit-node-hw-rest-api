@@ -14,7 +14,7 @@ const {
   getCurrentUser,
   updateUserInfo,
   updateAvatar,
-} = require("./../../controllers/auth");
+} = require("./../../controllers/auth/index");
 
 const {
   registerJoiSchema,
